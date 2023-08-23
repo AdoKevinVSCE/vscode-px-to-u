@@ -1,78 +1,103 @@
-
+import { type WorkspaceConfiguration } from 'vscode';
 
 export interface AdviseHint {
-    px: string;
-    pxValue: number;
-    replaceText: string;
+  px: number;
+  pxValue: number;
+  replaceText: string;
 }
 
+export interface Config {
+  width: number;
+  height: number;
+  customXX?: string;
+  toFixedNum?: number;
+}
 
 export default class Process {
-    constructor(private config: any) {}
-    private regPx: RegExp = /([-]?[\d.]+)p(x)?/;
-    private regPxAll: RegExp = /([-]?[\d.]+)px/g;
+  private config: Config;
+  private regPx: RegExp = /([-]?[\d.]+)p(x)?/;
+  private regPxAll: RegExp = /([-]?[\d.]+)px/g;
 
-    convert(text: string): Array<AdviseHint> {
-        let match = text.match(this.regPx);
-        if(!match) { return []; }
-        let ret = [];
-        ret.push(this.px2vw(match[1]));
-        ret.push(this.px2vh(match[1]));
-        ret.push(this.px2rem(match[1]));
-        ret = ret.concat(this.px2custom(match[1]));
-        return ret;
-    }
+  constructor(config: WorkspaceConfiguration) {
+    this.config = {
+      width: config.get('designWidth') ?? 750,
+      height: config.get('designHeight') ?? 667,
+      customXX: config.get('customXX'),
+      toFixedNum: config.get('toFixedNum') ?? 4,
+    };
+  }
 
-    convertAll(text: string): string {
-        if(!text) { return text; }
-        return text.replace(this.regPxAll, (word: string) => {
-            const res = this.px2vw(word);
-            if(res) { return res.replaceText; }
-            return word;
-        });
+  convert(text: string): Array<AdviseHint> {
+    const match = text.match(this.regPx);
+    if (!match) {
+      return [];
     }
+    const pxValue = parseFloat(match[1]);
+    const ret = [this.px2vw(pxValue), this.px2vh(pxValue), this.px2rem(pxValue)];
 
-    private px2vw(text: string) {
-        const pxValue = parseFloat(text);
-        let vw: string = +(pxValue / this.config.width * 100).toFixed(this.config.toFixedNum) + 'vw';
-        return {
-            px: text,
-            pxValue: pxValue,
-            replaceText: vw
-        };
+    if (this.px2custom) {
+      ret.push(...this.px2custom(pxValue));
     }
+    return ret;
+  }
 
-    private px2vh(text: string) {
-        const pxValue = parseFloat(text);
-        let vh: string = +(pxValue / this.config.height * 100).toFixed(this.config.toFixedNum) + 'vh';
-        return {
-            px: text,
-            pxValue: pxValue,
-            replaceText: vh
-        };
+  convertAll(text: string): string {
+    if (!text) {
+      return text;
     }
+    return text.replace(this.regPxAll, (word: string) => {
+      const res = this.px2vw(parseFloat(word));
+      if (res) {
+        return res.replaceText;
+      }
+      return word;
+    });
+  }
 
-    private px2rem(text: string) {
-        const pxValue = parseFloat(text);
-        let vh: string = +(pxValue * 10 / this.config.width).toFixed(this.config.toFixedNum) + 'rem';
-        return {
-            px: text,
-            pxValue: pxValue,
-            replaceText: vh
-        };
-    }
+  private px2vw(pxValue: number) {
+    const vw = ((pxValue / this.config.width) * 100).toFixed(this.config.toFixedNum) + 'vw';
+    return {
+      px: pxValue,
+      pxValue: pxValue,
+      replaceText: vw,
+    };
+  }
 
-    private px2custom(text: string) {
-        const pxValue = parseFloat(text);
-        let [rate, unit] = this.config.customXX.split('%');
-        rate = parseFloat(rate);
-        unit = unit || '';
-        if(isNaN(rate)) { return []; }
-        let vh: string = +(pxValue * rate).toFixed(this.config.toFixedNum) + unit;
-        return [{
-            px: text,
-            pxValue: pxValue,
-            replaceText: vh
-        }];
+  private px2vh(pxValue: number) {
+    const vh = ((pxValue / this.config.height) * 100).toFixed(this.config.toFixedNum) + 'vh';
+    return {
+      px: pxValue,
+      pxValue: pxValue,
+      replaceText: vh,
+    };
+  }
+
+  private px2rem(pxValue: number) {
+    const rem = ((pxValue * 10) / this.config.width).toFixed(this.config.toFixedNum) + 'rem';
+    return {
+      px: pxValue,
+      pxValue: pxValue,
+      replaceText: rem,
+    };
+  }
+
+  private px2custom(pxValue: number) {
+    if (this.config.customXX) {
+      const [rateStr, unit = ''] = this.config.customXX.split('%');
+
+      const rate = parseFloat(rateStr);
+      if (isNaN(rate)) {
+        return [];
+      }
+      const vh = (pxValue * rate).toFixed(this.config.toFixedNum) + unit;
+      return [
+        {
+          px: pxValue,
+          pxValue: pxValue,
+          replaceText: vh,
+        },
+      ];
     }
+    return [];
+  }
 }

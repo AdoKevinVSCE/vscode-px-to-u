@@ -1,86 +1,113 @@
 {
-	"name": "px2xx",
-	"displayName": "px2xx",
-	"description": "px单位转换，转rem，vw，vh及自定义单位。可配置最大宽度，最大高度，以及自定义单位比率。",
-	"version": "0.0.3",
-	"engines": {
-		"vscode": "^1.35.0"
-	},
-	"keywords": [
-		"vh",
-		"px vw",
-		"px rem",
-		"px2rem",
-		"px2vw",
-		"px2vh",
-		"px2xx"
-	],
-	"categories": [
-		"Other"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/ProEagle/px2xx"
-	},
-	"icon": "icon.png",
-	"publisher": "ProEagle",
-	"activationEvents": [
-		"onCommand:extension.px2xx",
-		"onLanguage:html",
-		"onLanguage:css",
-		"onLanguage:vue",
-		"onLanguage:less",
-		"onLanguage:scss",
-		"onLanguage:sass",
-		"onLanguage:stylus"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.px2xx",
-				"title": "px2xx"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "px2xx configure",
-			"properties": {
-				"px2xx.width": {
-					"type": "number",
-					"default": 750,
-					"description": "屏幕最大宽度，用来转换vw，rem"
-				},
-				"px2xx.height": {
-					"type": "number",
-					"default": 667,
-					"description": "屏幕最大高度，用于转换vh"
-				},
-				"px2xx.toFixedNum": {
-					"type": "number",
-					"default": 4,
-					"description": "换算单位时保留小数长度"
-				},
-				"px2xx.customXX": {
-					"type": "string",
-					"default": "1%xx",
-					"description": "自定义转换，格式为rate%unit，rate为有效数字，unit为转换后的单位，如1%xx，4px可以通过计算(4*1)xx，最后出来结果就是4xx。"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
-	},
-	"devDependencies": {
-		"@types/mocha": "^2.2.42",
-		"@types/node": "^10.12.21",
-		"tslint": "^5.20.1",
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.37"
-	}
+  "publisher": "KevinLaw",
+  "name": "px-to-u",
+  "displayName": "px to U",
+  "version": "1.0.2",
+  "keywords": [
+    "vh",
+    "px viewport",
+    "px to viewport",
+    "px to vw",
+    "px to vh",
+    "px to rem",
+    "px vw",
+    "px rem",
+    "px 2 vw"
+  ],
+  "private": true,
+  "packageManager": "pnpm@8.6.0",
+  "description": "Tool for transform css px unit to other unit likes rem, vw, vh by design size",
+  "author": "Kevin Law <kevinlaw1024@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/adokevin/vscode-px-to-u#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adokevin/vscode-px-to-u"
+  },
+  "bugs": {
+    "url": "https://github.com/adokevin/vscode-px-to-u/issues"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/index.js",
+  "icon": "res/icon.png",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "vscode": "^1.78.1"
+  },
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguage:html",
+    "onLanguage:css",
+    "onLanguage:vue",
+    "onLanguage:less",
+    "onLanguage:scss",
+    "onLanguage:sass",
+    "onLanguage:stylus"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --external vscode",
+    "dev": "nr build --watch --sourcemap",
+    "lint": "eslint .",
+    "vscode:prepublish": "nr build",
+    "publish": "vsce publish --no-dependencies",
+    "pack": "vsce package --no-dependencies",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "release": "bumpp && nr publish"
+  },
+  "devDependencies": {
+    "@antfu/ni": "^0.21.5",
+    "@types/node": "^18.16.16",
+    "@types/vscode": "^1.78.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "@vscode/vsce": "^2.19.0",
+    "bumpp": "^9.1.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.9.0",
+    "npm": "^9.8.1",
+    "pnpm": "^8.6.11",
+    "prettier": "^3.0.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.1.3",
+    "vite": "^4.2.3",
+    "vitest": "^0.31.4"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "px-to-u.px2unit",
+        "title": "Px to Unit"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "PX to U",
+      "properties": {
+        "px-to-u.designWidth": {
+          "type": "number",
+          "default": 750,
+          "description": "屏幕最大宽度，用来转换vw，rem"
+        },
+        "px-to-u.designHeight": {
+          "type": "number",
+          "default": 667,
+          "description": "屏幕最大高度，用于转换vh"
+        },
+        "px-to-u.toFixedNum": {
+          "type": "number",
+          "default": 4,
+          "description": "换算单位时保留小数长度"
+        },
+        "px-to-u.customXX": {
+          "type": "string",
+          "description": "自定义转换，格式为rate%unit，rate为有效数字，unit为转换后的单位，如1%xx，4px可以通过计算(4*1)xx，最后出来结果就是4xx。"
+        }
+      }
+    }
+  }
 }
