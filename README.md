@@ -57,3 +57,5 @@ You can open the settings page by using the shortcut `Ctrl + ,`, then search for
 ### Command
 
 You can replace all specified CSS units in the current file.
+
+[MIT](./LICENSE) License © 2025 [Kevin Law](https://github.com/AdoKevin)
