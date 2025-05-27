@@ -15,8 +15,8 @@ export interface Config {
 
 export default class Process {
   private config: Config;
-  private regPx: RegExp = /([-]?[\d.]+)p(x)?/;
-  private regPxAll: RegExp = /([-]?[\d.]+)px/g;
+  private regPx = /([-]?[\d.]+)p(x)?/;
+  private regPxAll = /([-]?[\d.]+)px/g;
 
   constructor(config: WorkspaceConfiguration) {
     this.config = {
@@ -27,7 +27,7 @@ export default class Process {
     };
   }
 
-  convert(text: string): Array<AdviseHint> {
+  convert(text: string): AdviseHint[] {
     const match = text.match(this.regPx);
     if (!match) {
       return [];

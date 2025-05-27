@@ -14,6 +14,3 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(providerDisposable);
   }
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {}
